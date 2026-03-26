@@ -1,4 +1,4 @@
-# Fractal Visualizer — Enterprise Edition
+# Fractal Visualizer
 
 A high-performance fractal exploration platform combining a **C++ computation engine** (via pybind11), a **Python/Flask** API server, and a **WebGL + Three.js** frontend.
 
