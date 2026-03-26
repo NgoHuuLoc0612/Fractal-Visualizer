@@ -1,0 +1,6 @@
+flask
+flask-cors
+numpy
+Pillow
+pybind11
+setuptools

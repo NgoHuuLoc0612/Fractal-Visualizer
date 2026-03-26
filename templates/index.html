@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Fractal Visualizer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Inter:wght@300;400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="/static/css/app.css"/>
+</head>
+<body>
+
+<!-- ══ TOP BAR ═══════════════════════════════════════════════ -->
+<header id="topbar">
+  <div class="logo">
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+      <circle cx="14" cy="14" r="13" stroke="#00ffe7" stroke-width="1.5"/>
+      <path d="M14 2 Q20 8 14 14 Q8 20 14 26" stroke="#00ffe7" stroke-width="1.5" fill="none"/>
+      <path d="M2 14 Q8 8 14 14 Q20 20 26 14" stroke="#ff3cac" stroke-width="1.5" fill="none"/>
+      <circle cx="14" cy="14" r="2.5" fill="#fff200"/>
+    </svg>
+    <span>FRACTAL <strong>VISUALIZER</strong></span>
+  </div>
+
+  <nav class="mode-tabs">
+    <button class="tab-btn active" data-tab="2d">2D Explorer</button>
+    <button class="tab-btn" data-tab="3d">3D Surface</button>
+    <button class="tab-btn" data-tab="animate">Animate</button>
+    <button class="tab-btn" data-tab="julia-grid">Julia Grid</button>
+    <button class="tab-btn" data-tab="ifs">IFS</button>
+  </nav>
+
+  <div class="topbar-right">
+    <span id="engine-badge" class="badge">…</span>
+    <span id="render-time" class="badge muted">—</span>
+    <button id="btn-fullscreen" title="Fullscreen">⛶</button>
+  </div>
+</header>
+
+<!-- ══ MAIN LAYOUT ════════════════════════════════════════════ -->
+<main id="app-layout">
+
+  <!-- LEFT PANEL -->
+  <aside id="left-panel">
+    <div class="panel-scroll">
+
+      <!-- Fractal Type -->
+      <section class="panel-section">
+        <h3 class="section-title">FRACTAL TYPE</h3>
+        <div class="fractal-type-grid">
+          <button class="ftype-btn active" data-type="mandelbrot">Mandelbrot</button>
+          <button class="ftype-btn" data-type="julia">Julia</button>
+          <button class="ftype-btn" data-type="burning_ship">Burn. Ship</button>
+          <button class="ftype-btn" data-type="newton">Newton</button>
+          <button class="ftype-btn" data-type="lyapunov">Lyapunov</button>
+          <button class="ftype-btn" data-type="tricorn">Tricorn</button>
+          <button class="ftype-btn" data-type="multibrot">Multibrot</button>
+          <button class="ftype-btn" data-type="phoenix">Phoenix</button>
+          <button class="ftype-btn" data-type="burning_ship_julia">BS Julia</button>
+          <button class="ftype-btn" data-type="nova">Nova</button>
+          <button class="ftype-btn" data-type="collatz">Collatz</button>
+          <button class="ftype-btn" data-type="buddhabrot">Buddhabrot</button>
+        </div>
+      </section>
+
+      <!-- Viewport -->
+      <section class="panel-section">
+        <h3 class="section-title">VIEWPORT</h3>
+        <div class="input-row"><label>X min</label><input type="number" id="p-xmin" value="-2.5" step="0.1"/></div>
+        <div class="input-row"><label>X max</label><input type="number" id="p-xmax" value="1.0"  step="0.1"/></div>
+        <div class="input-row"><label>Y min</label><input type="number" id="p-ymin" value="-1.25" step="0.1"/></div>
+        <div class="input-row"><label>Y max</label><input type="number" id="p-ymax" value="1.25"  step="0.1"/></div>
+        <button class="btn-small" id="btn-reset-view">Reset View</button>
+      </section>
+
+      <!-- Quality -->
+      <section class="panel-section">
+        <h3 class="section-title">QUALITY</h3>
+        <div class="input-row">
+          <label>Max Iter</label>
+          <input type="range" id="p-maxiter" min="64" max="4096" value="256" step="32"/>
+          <span class="val-label" id="lbl-maxiter">256</span>
+        </div>
+        <div class="input-row">
+          <label>Width px</label>
+          <select id="p-width">
+            <option value="400">400</option><option value="600">600</option>
+            <option value="800" selected>800</option><option value="1200">1200</option>
+            <option value="1600">1600</option>
+          </select>
+        </div>
+        <div class="input-row">
+          <label>Height px</label>
+          <select id="p-height">
+            <option value="300">300</option><option value="450">450</option>
+            <option value="600" selected>600</option><option value="900">900</option>
+            <option value="1200">1200</option>
+          </select>
+        </div>
+        <div class="input-row">
+          <label>Threads</label>
+          <input type="range" id="p-threads" min="1" max="16" value="4" step="1"/>
+          <span class="val-label" id="lbl-threads">4</span>
+        </div>
+      </section>
+
+      <!-- Coloring -->
+      <section class="panel-section">
+        <h3 class="section-title">COLORING</h3>
+        <div class="input-row">
+          <label>Palette</label>
+          <select id="p-palette">
+            <option value="ultra">Ultra</option>
+            <option value="fire">Fire</option>
+            <option value="ice">Ice</option>
+            <option value="electric">Electric</option>
+            <option value="grayscale">Grayscale</option>
+            <option value="newton">Newton</option>
+            <option value="magma">Magma</option>
+            <option value="viridis">Viridis</option>
+            <option value="plasma">Plasma</option>
+            <option value="cosmic">Cosmic</option>
+            <option value="tropical">Tropical</option>
+          </select>
+        </div>
+        <div class="input-row">
+          <label>Color Mode</label>
+          <select id="p-colormode">
+            <option value="0">Smooth</option><option value="1">Orbit Trap</option>
+            <option value="2">Distance Est.</option><option value="3">Angle</option>
+            <option value="4">Stripe Avg</option>
+          </select>
+        </div>
+        <div class="input-row">
+          <label>Gamma</label>
+          <input type="range" id="p-gamma" min="0.1" max="3.0" value="1.0" step="0.05"/>
+          <span class="val-label" id="lbl-gamma">1.0</span>
+        </div>
+        <div class="input-row">
+          <label>Cycle</label>
+          <input type="range" id="p-cycle" min="0.2" max="5.0" value="1.0" step="0.1"/>
+          <span class="val-label" id="lbl-cycle">1.0</span>
+        </div>
+        <div class="input-row">
+          <label>Bailout</label>
+          <input type="range" id="p-bailout" min="2" max="32" value="2" step="0.5"/>
+          <span class="val-label" id="lbl-bailout">2.0</span>
+        </div>
+        <div class="input-row">
+          <label>Invert</label>
+          <input type="checkbox" id="p-invert"/>
+        </div>
+      </section>
+
+      <!-- ── Fractal-specific param panels ──────────────── -->
+
+      <!-- Julia -->
+      <section class="panel-section ftype-params" id="julia-params" style="display:none">
+        <h3 class="section-title">JULIA PARAMS</h3>
+        <div class="input-row">
+          <label>Re(c)</label>
+          <input type="range" id="p-julia-cr" min="-2" max="2" value="-0.7" step="0.001"/>
+          <span class="val-label" id="lbl-julia-cr">-0.700</span>
+        </div>
+        <div class="input-row">
+          <label>Im(c)</label>
+          <input type="range" id="p-julia-ci" min="-2" max="2" value="0.27015" step="0.001"/>
+          <span class="val-label" id="lbl-julia-ci">0.270</span>
+        </div>
+      </section>
+
+      <!-- Newton -->
+      <section class="panel-section ftype-params" id="newton-params" style="display:none">
+        <h3 class="section-title">NEWTON PARAMS</h3>
+        <div class="input-row">
+          <label>Degree</label>
+          <input type="range" id="p-newton-deg" min="2" max="8" value="3" step="1"/>
+          <span class="val-label" id="lbl-newton-deg">3</span>
+        </div>
+        <div class="input-row">
+          <label>Tolerance</label>
+          <input type="range" id="p-newton-tol" min="-8" max="-3" value="-6" step="0.5"/>
+          <span class="val-label" id="lbl-newton-tol">1e-6</span>
+        </div>
+      </section>
+
+      <!-- Lyapunov -->
+      <section class="panel-section ftype-params" id="lyapunov-params" style="display:none">
+        <h3 class="section-title">LYAPUNOV PARAMS</h3>
+        <div class="input-row">
+          <label>Sequence</label>
+          <input type="text" id="p-lyapunov-seq" value="AB" maxlength="16"/>
+        </div>
+        <div class="input-row">
+          <label>Warmup</label>
+          <input type="range" id="p-lyapunov-wu" min="10" max="500" value="100" step="10"/>
+          <span class="val-label" id="lbl-lyapunov-wu">100</span>
+        </div>
+      </section>
+
+      <!-- Multibrot -->
+      <section class="panel-section ftype-params" id="multibrot-params" style="display:none">
+        <h3 class="section-title">MULTIBROT PARAMS</h3>
+        <div class="input-row">
+          <label>Exponent</label>
+          <input type="range" id="p-multibrot-exp" min="2" max="8" value="3" step="0.1"/>
+          <span class="val-label" id="lbl-multibrot-exp">3.0</span>
+        </div>
+      </section>
+
+      <!-- Phoenix -->
+      <section class="panel-section ftype-params" id="phoenix-params" style="display:none">
+        <h3 class="section-title">PHOENIX PARAMS</h3>
+        <div class="input-row">
+          <label>p (Re)</label>
+          <input type="range" id="p-phoenix-cr" min="-1" max="1" value="0.5667" step="0.001"/>
+          <span class="val-label" id="lbl-phoenix-cr">0.567</span>
+        </div>
+        <div class="input-row">
+          <label>q (Im)</label>
+          <input type="range" id="p-phoenix-ci" min="-1" max="1" value="-0.5" step="0.001"/>
+          <span class="val-label" id="lbl-phoenix-ci">-0.500</span>
+        </div>
+      </section>
+
+      <!-- Burning Ship Julia -->
+      <section class="panel-section ftype-params" id="bsj-params" style="display:none">
+        <h3 class="section-title">BS JULIA PARAMS</h3>
+        <div class="input-row">
+          <label>Re(c)</label>
+          <input type="range" id="p-bsj-cr" min="-2" max="2" value="-1.755" step="0.001"/>
+          <span class="val-label" id="lbl-bsj-cr">-1.755</span>
+        </div>
+        <div class="input-row">
+          <label>Im(c)</label>
+          <input type="range" id="p-bsj-ci" min="-2" max="2" value="0.0" step="0.001"/>
+          <span class="val-label" id="lbl-bsj-ci">0.000</span>
+        </div>
+      </section>
+
+      <!-- Nova -->
+      <section class="panel-section ftype-params" id="nova-params" style="display:none">
+        <h3 class="section-title">NOVA PARAMS</h3>
+        <div class="input-row">
+          <label>Degree</label>
+          <input type="range" id="p-nova-deg" min="2" max="8" value="3" step="1"/>
+          <span class="val-label" id="lbl-nova-deg">3</span>
+        </div>
+      </section>
+
+      <!-- Buddhabrot -->
+      <section class="panel-section ftype-params" id="buddhabrot-params" style="display:none">
+        <h3 class="section-title">BUDDHABROT PARAMS</h3>
+        <div class="input-row">
+          <label>Iter R</label>
+          <input type="range" id="p-brot-ir" min="50" max="500" value="100" step="50"/>
+          <span class="val-label" id="lbl-brot-ir">100</span>
+        </div>
+        <div class="input-row">
+          <label>Iter G</label>
+          <input type="range" id="p-brot-ig" min="200" max="5000" value="1000" step="200"/>
+          <span class="val-label" id="lbl-brot-ig">1000</span>
+        </div>
+        <div class="input-row">
+          <label>Iter B</label>
+          <input type="range" id="p-brot-ib" min="500" max="10000" value="5000" step="500"/>
+          <span class="val-label" id="lbl-brot-ib">5000</span>
+        </div>
+        <div class="input-row">
+          <label>Samples</label>
+          <select id="p-brot-samples">
+            <option value="500000">500 K</option>
+            <option value="1000000">1 M</option>
+            <option value="2000000" selected>2 M</option>
+            <option value="5000000">5 M</option>
+          </select>
+        </div>
+        <p class="hint-text">⚠ Buddhabrot is slow — use fewer samples to preview.</p>
+      </section>
+
+      <!-- Render -->
+      <section class="panel-section">
+        <button class="btn-render" id="btn-render">▶ RENDER</button>
+        <button class="btn-small"  id="btn-download">⬇ Save PNG</button>
+      </section>
+
+    </div>
+  </aside>
+
+  <!-- CANVAS AREA -->
+  <div id="canvas-area">
+
+    <!-- 2D tab -->
+    <div class="tab-content active" id="tab-2d">
+      <div id="canvas-wrapper">
+        <canvas id="fractal-canvas" width="800" height="600"></canvas>
+        <div id="canvas-overlay">
+          <div id="overlay-hint">Click ▶ RENDER or drag to zoom</div>
+        </div>
+        <div id="zoom-box"></div>
+        <div id="crosshair-h"></div>
+        <div id="crosshair-v"></div>
+        <div id="coord-readout"></div>
+      </div>
+      <div id="progress-bar-wrap"><div id="progress-bar"></div></div>
+    </div>
+
+    <!-- 3D tab -->
+    <div class="tab-content" id="tab-3d">
+      <div id="three-container"></div>
+      <div id="three-controls">
+        <label>Z Scale <input type="range" id="p-zscale" min="0.1" max="5" value="1.5" step="0.1"/> <span id="lbl-zscale">1.5</span></label>
+        <label>Smooth <input type="checkbox" id="p-smooth3d" checked/></label>
+        <label>Wireframe <input type="checkbox" id="p-wireframe"/></label>
+        <button class="btn-small" id="btn-render-3d">▶ Render 3D</button>
+      </div>
+    </div>
+
+    <!-- Animate tab -->
+    <div class="tab-content" id="tab-animate">
+      <div id="anim-canvas-wrap"><canvas id="anim-canvas" width="800" height="600"></canvas></div>
+      <div id="anim-controls">
+        <label>Radius <input type="range" id="anim-radius" min="0.1" max="1.5" value="0.7885" step="0.01"/> <span id="lbl-anim-radius">0.79</span></label>
+        <label>Speed  <input type="range" id="anim-speed"  min="0.005" max="0.1" value="0.02" step="0.005"/> <span id="lbl-anim-speed">0.02</span></label>
+        <label>Width  <select id="anim-width"><option value="400">400</option><option value="600" selected>600</option><option value="800">800</option></select></label>
+        <button class="btn-render" id="btn-anim-toggle">▶ START</button>
+        <span id="anim-fps" class="badge muted">0 fps</span>
+      </div>
+    </div>
+
+    <!-- Julia grid tab -->
+    <div class="tab-content" id="tab-julia-grid">
+      <div id="julia-grid-header">
+        <button class="btn-render" id="btn-julia-grid">▶ Generate Grid</button>
+        <span class="muted" style="font-size:.75rem">Click any tile to load that Julia set</span>
+      </div>
+      <div id="julia-grid-container"></div>
+    </div>
+
+    <!-- IFS tab -->
+    <div class="tab-content" id="tab-ifs">
+      <canvas id="ifs-canvas" width="800" height="800"></canvas>
+      <div id="ifs-controls">
+        <label>Preset
+          <select id="ifs-preset">
+            <option value="barnsley">Barnsley Fern</option>
+            <option value="sierpinski">Sierpinski Triangle</option>
+            <option value="dragon">Dragon Curve</option>
+            <option value="levy">Lévy C Curve</option>
+            <option value="tree">Fractal Tree</option>
+          </select>
+        </label>
+        <label>Points
+          <select id="ifs-points">
+            <option value="200000">200 K</option>
+            <option value="500000" selected>500 K</option>
+            <option value="1000000">1 M</option>
+            <option value="2000000">2 M</option>
+          </select>
+        </label>
+        <button class="btn-render" id="btn-ifs">▶ Render IFS</button>
+      </div>
+    </div>
+
+  </div><!-- /canvas-area -->
+
+  <!-- RIGHT PANEL -->
+  <aside id="right-panel">
+    <div class="panel-scroll">
+      <section class="panel-section">
+        <h3 class="section-title">ZOOM HISTORY</h3>
+        <div id="zoom-history"></div>
+        <button class="btn-small" id="btn-undo-zoom">↩ Undo Zoom</button>
+      </section>
+
+      <section class="panel-section">
+        <h3 class="section-title">STATISTICS</h3>
+        <div class="stat-row"><span>Render time</span><span id="st-rtime">—</span></div>
+        <div class="stat-row"><span>Resolution</span><span id="st-res">—</span></div>
+        <div class="stat-row"><span>Zoom level</span><span id="st-zoom">1×</span></div>
+        <div class="stat-row"><span>Center</span><span id="st-center">—</span></div>
+        <div class="stat-row"><span>Engine</span><span id="st-engine">—</span></div>
+      </section>
+
+      <section class="panel-section">
+        <h3 class="section-title">FRACTAL INFO</h3>
+        <div id="fractal-info-box" class="mono-small">Select a fractal type to see details.</div>
+      </section>
+
+      <section class="panel-section">
+        <h3 class="section-title">BOOKMARKS</h3>
+        <button class="btn-small" id="btn-bookmark">★ Bookmark View</button>
+        <div id="bookmark-list"></div>
+      </section>
+
+      <section class="panel-section">
+        <h3 class="section-title">COORDINATE</h3>
+        <div id="coord-detail">Hover canvas</div>
+      </section>
+
+      <section class="panel-section">
+        <h3 class="section-title">SHARE</h3>
+        <button class="btn-small" id="btn-copy-url">🔗 Copy URL</button>
+        <div id="share-url-display" class="mono-small" style="display:none"></div>
+      </section>
+    </div>
+  </aside>
+
+</main>
+
+<div id="loading-overlay" style="display:none">
+  <div class="spinner"></div>
+  <div id="loading-text">Rendering…</div>
+</div>
+
+<div id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="/static/js/three-surface.js"></script>
+<script src="/static/js/app.js"></script>
+</body>
+</html>
